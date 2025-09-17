@@ -5,8 +5,6 @@ TFLOP: Table Structure Recognition Framework with Layout Pointer Mechanism
 conda create -n tflop python=3.9
 conda activate tflop
 
-# Clone the TFLOP repository
-git clone https://github.com/UpstageAI/TFLOP
 
 # Install required packages
 cd TFLOP
