@@ -91,4 +91,4 @@ bash cpu_test_pubtabnet.sh
    --image_path TFLOP-dataset/images/validation/PMC555548_003_00.png \
   --pse_pkl TFLOP-dataset/pse_results/val/detection_results_0.pkl \
    --output_file single_result.json
-
+references - https://github.com/UpstageAI/TFLOP
