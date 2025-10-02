@@ -1,0 +1,59 @@
+# CPU-optimized PubTabNet configuration for TFLOP
+# Based on config/exp_configs/data_pubtabnet.yaml
+# Optimized for Intel i7 + 16GB RAM
+
+dataset_name: "pubtabnet_cpu"
+dataset_path: "./TFLOP-dataset"
+train_metadata_file: "meta_data/dataset_train_1percent.jsonl"
+val_metadata_file:   "meta_data/validation.jsonl"
+# Training data configuration
+train:
+  # Use the 1% reduced dataset
+  metadata_file: "meta_data/dataset_train_1percent.jsonl"
+  images_dir: "images/train"
+  pse_results_dir: "pse_results/train"
+
+  # CPU-optimized preprocessing
+  image_size: [512, 512]  # Reduced from [768, 768]
+  max_sequence_length: 512  # Reduced from 1024
+
+  # Memory optimizations
+  cache_images: false
+  lazy_loading: true
+
+# Validation data (keep small subset for CPU)
+validation:
+  metadata_file: "meta_data/validation.jsonl"
+  images_dir: "images/validation"
+  pse_results_dir: "pse_results/val"
+
+  # Use same preprocessing as training
+  image_size: [512, 512]
+  max_sequence_length: 512
+  cache_images: false
+
+# DataLoader configuration optimized for CPU
+dataloader:
+  # CPU-specific settings
+  batch_size: 1
+  num_workers: 2  # Optimal for i7
+  pin_memory: false  # Don't pin for CPU
+  persistent_workers: false
+  prefetch_factor: 1
+  drop_last: false
+
+  # Shuffle settings
+  shuffle_train: true
+  shuffle_val: false
+
+# Text processing (for table structure tokens)
+text_processing:
+  max_length: 512
+  truncation: true
+  padding: "max_length"
+
+# Augmentation (minimal for CPU efficiency)
+augmentation:
+  enabled: false  # Disable to save processing time
+  rotation: false
+  color_jitter: false

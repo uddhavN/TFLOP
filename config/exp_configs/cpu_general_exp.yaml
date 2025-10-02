@@ -1,0 +1,126 @@
+# Complete CPU-optimized TFLOP configuration with all required keys
+# This config includes all the missing keys we've encountered during debugging
+use_ptr_decoder: true
+# Experiment metadata
+exp_version: "cpu_v1.0"
+exp_name: "tflop_cpu_experiment"
+save_dir: "./results/cpu_experiments"
+result_path: "./results/cpu_experiments"
+
+# Required contrastive learning settings
+use_RowWise_contLearning: false
+use_ColWise_contLearning: true
+
+contrastive:
+  enabled: true
+  loss_type: "ntxent"
+  temp: 0.07
+  proj_dim: 256
+
+# Required special tokens and settings
+special_chars: "<sos> <eos> <pad> <unk> <sep>"
+use_OTSL: true
+seed: 42
+
+# Batch size settings (required by DataPLModule)
+train_batch_size: 2
+val_batch_size: 2
+test_batch_size: 2
+
+# Input configuration compatible with Swin Transformer
+input_size:
+  height: 224
+  width: 224
+
+max_target_length: 512
+max_source_length: 512
+
+# Model configuration with fixed Swin parameters
+model:
+  name: "donut"
+  pretrained_path: "./pretrain_weights/donut-base-finetuned-cord-v2"
+  
+  # Encoder settings (these may be overridden by hardcoded values in TFLOP.py)
+  encoder:
+    image_size: [224, 224]
+    patch_size: 4
+    hidden_size: 512 
+    num_layers: 8
+    num_heads:  8
+    dropout: 0.1
+    window_size: 7
+    
+  # Decoder settings
+  decoder:
+    vocab_size: 50265
+    max_length: 128  
+    num_layers: 4
+    hidden_size: 512 
+    num_heads: 12
+    dropout: 0.1
+
+# Training configuration optimized for CPU
+training:
+  max_epochs: 3
+  batch_size: 2
+  max_steps: 100
+  gradient_accumulation_steps: 8
+  learning_rate: 1e-7
+  warmup_steps: 50
+  weight_decay: 0.01
+  mixed_precision: false
+  gradient_checkpointing: false
+  gradient_clipping: 1.0
+  val_check_interval: 100
+  save_top_k: 1
+  monitor: "val_loss"
+  mode: "min"
+  early_stopping:
+    patience: 2
+    monitor: null
+    mode: "min"
+
+# Hardware configuration
+hardware:
+  devices: "cpu"
+  accelerator: "cpu"
+  precision: 32
+
+# Logging configuration
+logging:
+  logger: "tensorboard"
+  log_dir: "./logs/cpu_experiments"
+  log_every_n_steps: 100
+
+# Memory management
+memory:
+  empty_cache_frequency: 10
+  gc_frequency: 50
+
+# Augmentation configuration (disabled for CPU efficiency)
+augmentation:
+  enabled: false
+  rotation: false
+  color_jitter: false
+
+# Additional required fields
+bbox_special_tokens: 225  # Adjusted for 224x224 input
+version: "1.0"
+framework: "pytorch_lightning"
+task: "table_structure_recognition"
+
+# Additional potential missing keys (add as needed)
+window_size: 7
+encoder_layer: [2, 2, 6, 2]
+decoder_layer: 6
+max_length: 256
+name_or_path: "swin_base_patch4_window7_224"
+max_position_embeddings: 1024
+use_fast_decoder: true
+bbox_token_cnt: 78
+max_num_row: 50
+max_num_col: 50
+use_bbox_HiMulConET: false
+use_imgRoiAlign: false
+empty_cell_ptr_loss_coeff: 1.0
+non_empty_cell_ptr_loss_coeff: 1.0

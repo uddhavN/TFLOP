@@ -1,0 +1,79 @@
+# CPU-optimized general experiment configuration for TFLOP
+# Based on config/exp_configs/general_exp.yaml
+# Designed for Intel i7 + 16GB RAM
+
+experiment:
+  name: "tflop_cpu_experiment"
+  save_dir: "./results/cpu_experiments"
+  seed: 42
+
+input_size:
+  height: 512
+  width: 512
+# Model configuration
+model:
+  name: "donut"
+  pretrained_path: "./pretrain_weights/donut-base-finetuned-cord-v2"
+
+  # CPU-optimized model settings
+  encoder:
+    image_size: [512, 512]  # Match preprocessing
+    patch_size: 16
+    hidden_size: 768
+    num_layers: 12  # Keep full encoder
+    num_heads: 12
+    dropout: 0.1
+
+  decoder:
+    vocab_size: 50265
+    max_length: 512  # Reduced for CPU efficiency
+    num_layers: 6  # Reduced from 12
+    hidden_size: 768
+    num_heads: 12
+    dropout: 0.1
+
+# Training configuration optimized for CPU
+training:
+  # Reduced training for CPU constraints
+  max_epochs: 5  # Instead of 30+
+  batch_size: 1
+  gradient_accumulation_steps: 8  # Simulate batch_size=8
+
+  # Learning rate schedule
+  learning_rate: 1e-4
+  warmup_steps: 100  # Reduced warmup
+  weight_decay: 0.01
+
+  # CPU-specific optimizations
+  mixed_precision: false  # Disable AMP for CPU
+  gradient_checkpointing: true  # Save memory
+  gradient_clipping: 1.0
+
+  # Validation and checkpointing
+  val_check_interval: 0.25  # Check 4 times per epoch
+  save_top_k: 2
+  monitor: "val_loss"
+  mode: "min"
+
+  # Early stopping for CPU efficiency
+  early_stopping:
+    patience: 3
+    monitor: "val_loss"
+    mode: "min"
+
+# Hardware configuration
+hardware:
+  devices: "cpu"
+  accelerator: "cpu"
+  precision: 32  # Full precision for CPU
+
+# Logging configuration
+logging:
+  logger: "tensorboard"
+  log_dir: "./logs/cpu_experiments"
+  log_every_n_steps: 10
+
+# Memory management
+memory:
+  empty_cache_frequency: 10  # Clear cache every 10 batches
+  gc_frequency: 50  # Garbage collect every 50 batches

@@ -1,0 +1,58 @@
+# cpu_data_pubtabnet.yaml
+# Dataset-specific configuration for PubTabNet on CPU
+
+# Paths
+dataset_name: "pubtabnet_cpu"
+dataset_path: "./TFLOP-dataset"
+image_path: TFLOP-dataset/images
+# Metadata files
+train_metadata_file: "meta_data/dataset_train.jsonl"
+val_metadata_file:   "meta_data/dataset_validation.jsonl"
+
+# Dataset loader module
+dataset_script_path: "tflop.datamodule.datasets.tflop"
+dataset_class_name:  "TFLOPDataset"
+
+# Train split settings
+train:
+  metadata_file:        "meta_data/dataset_train.jsonl"
+  images_dir:           "images/train"
+  pse_results_dir:      "pse_results/train"
+  image_size:           [224, 224]
+  max_sequence_length:  128
+  cache_images:         false
+  lazy_loading:         true
+  max_retry_attempts: 5
+  use_fallback_sample: true
+
+# Validation split settings
+validation:
+  metadata_file:        "meta_data/dataset_validation.jsonl"
+  images_dir:           "images/validation"
+  pse_results_dir:      "pse_results/val"
+  image_size:           [224, 224]
+  max_sequence_length:  128
+  cache_images:         false
+
+# DataLoader parameters
+dataloader:
+  batch_size:           2
+  num_workers:          0
+  pin_memory:           false
+  persistent_workers:   false
+  prefetch_factor:  1
+  drop_last:            true
+  shuffle_train:        true
+  shuffle_val:          false
+
+# Text processing
+text_processing:
+  max_length:           256
+  truncation:           true
+  padding:              "max_length"
+
+# Augmentation (disabled for CPU efficiency)
+augmentation:
+  enabled:              false
+  rotation:             false
+  color_jitter:         false
